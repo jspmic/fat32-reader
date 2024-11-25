@@ -1,1 +1,2 @@
-build/
+build/*.img
+build/*.out
