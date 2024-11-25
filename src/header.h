@@ -1,0 +1,4 @@
+enum FAT32{
+	FIRST_LAST_BYTE = 0x55,
+	SECOND_LAST_BYTE = 0xAA,
+};
