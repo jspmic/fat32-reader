@@ -14,9 +14,6 @@
 // A sector is considered to be 512 bytes large
 #define SECTOR_SIZE 512
 
-// A partition is of size 16 bytes
-#define PARTITION_DESCRIPTOR 16
-
 // FAT32 partition table is of size 64 bytes
 #define PARTITION_TABLE 64
 
@@ -34,7 +31,7 @@ int open_disk(const char* disk_name){
 }
 
 // Return start position + end - eof
-int read_disk(int fd, char buffer[], int start, int end){
+int read_disk(int fd, unsigned char buffer[], int start, int end){
 	int l = read(fd, buffer, end-start);
 	if (l==-1){
 		perror("read_disk");
@@ -53,20 +50,17 @@ void close_disk(int fd){
 */
 
 // Read the n-th partition(note that only 4 partitions are available)
-int read_partition(int fd){
+void read_partition(int fd, unsigned char buffer[]){
 	int pos;
-	char buffer[PARTITION_DESCRIPTOR];
 	if (fd < BOOT_END)
-		pos = read_disk(fd, buffer, BOOT_START+BOOT_END, BOOT_END+PARTITION_DESCRIPTOR);
+		pos = read_disk(fd, buffer, BOOT_START+BOOT_END, BOOT_END+PARTITION_DESCRIPTION);
 	else
-		pos = read_disk(fd, buffer, 0, PARTITION_DESCRIPTOR);
+		pos = read_disk(fd, buffer, 0, PARTITION_DESCRIPTION);
 
 	if (pos == -1){
 		perror("read_partition");
-		return -1;
+		return;
 	}
-	write(STDOUT_FILENO, buffer, PARTITION_DESCRIPTOR);
-	return pos;
 }
 
 int main(int argc, char** argv){
@@ -75,7 +69,9 @@ int main(int argc, char** argv){
 		return 1;
 	}
 	int fd = open_disk(argv[argc-1]);
-	read_partition(fd);
+	unsigned char buffer[PARTITION_DESCRIPTION];
+	read_partition(fd, buffer);
+	printf("It is FAT32 %s\n", buffer);
 	close_disk(fd);
 	return 0;
 }
