@@ -22,9 +22,13 @@
  to implement the reader
 */
 int open_disk(const char* disk_name){
-	int fd = open(disk_name, O_RDONLY);
+	int fd = open(disk_name, O_RDONLY, 0);
 	if (fd == -1){
 		perror("read_disk");
+		exit(1);
+	}
+	if (lseek(fd, BOOT_END, 0) == -1){
+		perror("lseek - open_disk");
 		exit(1);
 	}
 	return fd;
@@ -40,10 +44,6 @@ int read_disk(int fd, unsigned char buffer[], int start, int end){
 	return l;
 }
 
-void close_disk(int fd){
-	close(fd);
-}
-
 /*
  This section contains various procedures to read safely
  from a given disk file.
@@ -52,10 +52,10 @@ void close_disk(int fd){
 // Read the n-th partition(note that only 4 partitions are available)
 void read_partition(int fd, unsigned char buffer[]){
 	int pos;
-	if (fd < BOOT_END)
-		pos = read_disk(fd, buffer, BOOT_START+BOOT_END, BOOT_END+PARTITION_DESCRIPTION);
-	else
-		pos = read_disk(fd, buffer, 0, PARTITION_DESCRIPTION);
+	/* if (fd < BOOT_END) */
+	pos = read_disk(fd, buffer, 0, PARTITION_DESCRIPTION);
+	/* else */
+	/* 	pos = read_disk(fd, buffer, 0, PARTITION_DESCRIPTION); */
 
 	if (pos == -1){
 		perror("read_partition");
@@ -71,7 +71,9 @@ int main(int argc, char** argv){
 	int fd = open_disk(argv[argc-1]);
 	unsigned char buffer[PARTITION_DESCRIPTION];
 	read_partition(fd, buffer);
-	printf("It is FAT32 %s\n", buffer);
-	close_disk(fd);
+	for (int i = 0; i<PARTITION_DESCRIPTION; i++)
+		printf("%x ", buffer[i]);
+	printf("\n");
+	close(fd);
 	return 0;
 }
