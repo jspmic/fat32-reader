@@ -18,6 +18,7 @@ disk:
 	else \
 		echo "Creating disk image '$(DISK)'..."; \
 		dd if=/dev/zero of=$(BUILD_DIR)/$(DISK) bs=1M count=$(SIZE); \
+		mkfs.fat -F 32 $(BUILD_DIR)/$(DISK); \
 		echo "Disk image '$(DISK)' created."; \
 	fi
 
