@@ -12,20 +12,15 @@
 	 * - https://en.wikipedia.org/wiki/Design_of_the_FAT_file_system
 */
 
-// A sector is considered to be 512 bytes large
-#define SECTOR_SIZE 512
-
-// FAT32 partition table is of size 64 bytes
-#define PARTITION_TABLE 64
-
 /*
  This section contains the basic functions which we will work with
  to implement the reader
 */
+
 int open_disk(const char* disk_name){
 	int fd = open(disk_name, O_RDONLY, 0);
 	if (fd == -1){
-		perror("read_disk");
+		perror("open_disk");
 		exit(1);
 	}
 	// Place at the end of the MBR
@@ -70,7 +65,6 @@ int main(int argc, char** argv){
 	}
 	int fd = open_disk(argv[argc-1]);
 	unsigned char buffer[PARTITION_DESCRIPTION];
-	/* read_partition_description(fd, buffer, 0); */
 	read_partition_description(fd, buffer, 1);
 	for (int i = 0; i<PARTITION_DESCRIPTION; i++)
 		printf("%x ", buffer[i]);
