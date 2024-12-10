@@ -1,3 +1,13 @@
+#ifndef HDR
+#define HDR
+
+
+// A sector is considered to be 512 bytes large
+#define SECTOR_SIZE 512
+
+// FAT32 partition table is of size 64 bytes
+#define PARTITION_TABLE 64
+
 enum FAT32_SECTOR{
 	BOOT_START				= 0, 		// The MBR beginning
 	BOOT_END				= 446, 		// The MBR ending
@@ -10,3 +20,6 @@ enum FAT32_SECTOR{
 	FIRST_LAST_BYTE			= 0x55,		// The first among the 2 last bytes of a sector
 	SECOND_LAST_BYTE		= 0xAA, 	// The very last byte of a sector
 };
+
+
+#endif
