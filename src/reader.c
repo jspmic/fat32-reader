@@ -1,7 +1,7 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <fcntl.h>
 #include <assert.h>
+#include <memory.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdint.h>
@@ -22,37 +22,129 @@
  to implement the reader
 */
 
-int open_disk(const char* disk_name){
-	int fd = open(disk_name, O_RDONLY); // READ-ONLY mode
-	if (fd == -1){
-		printf("Disk image not found!");
-		perror("open_disk");
-		exit(1);
-	}
+
+FILE* open_disk(const char* disk_name){
+	FILE* fd = fopen(disk_name, "rb"); // READ-ONLY mode
 	return fd;
 }
 
-/*
- * args:
- * - fd: file descriptor
- * - start: the starting point of reading
-*/
+BootSector _bootSector; // Global variable to store the MBR
 
-void read_disk(const int fd, const int start, const int end, uint32_t* buffer){
-	lseek(fd, 0, 0);
-	if(lseek(fd, start, 0) < 0)
-		perror("lseek - read_disk");
+void read_mbr(FILE* disk){
+	if (fread(&_bootSector, sizeof(_bootSector), 1, disk) < 0)
+		perror("read_mbr");
+}
 
-	int size = end-start;
-	int l = read(fd, buffer, size);
-
-	if (l==-1)
-		perror("read - read_disk");
-
-	for (int i = 0; i<size; i++){
-		buffer[i] = htobe32(buffer[i]);
+void test_mbr(void){
+	printf("JMP: \t\t\t");
+	for (int i = 0; i<JMP; i++){
+		printf("%.2X ", _bootSector.jmp[i]);
 	}
-	lseek(fd, 0, 0);
+
+	printf("\nOEM: \t\t\t");
+	for (int i = 0; i<OEM; i++){
+		printf("%.2X ", _bootSector.oem[i]);
+	}
+
+	printf("\nBytes per Sector:\t");
+	for (int i = 0; i<WORD; i++){
+		printf("%.2X ", _bootSector.bytesPerSector[i]);
+	}
+
+	printf("\nSectors per Cluster:\t");
+	for (int i = 0; i<BYTE; i++){
+		printf("%.2X ", _bootSector.sectorsPerCluster[i]);
+	}
+
+	printf("\nReserved Sectors:\t");
+	for (int i = 0; i<WORD; i++){
+		printf("%.2X ", _bootSector.reservedSectors[i]);
+	}
+
+	printf("\nNumber of FATs:\t\t");
+	for (int i = 0; i<BYTE; i++){
+		printf("%.2X ", _bootSector.numFat[i]);
+	}
+
+	printf("\nRoot Entries:\t\t");
+	for (int i = 0; i<WORD; i++){
+		printf("%.2X ", _bootSector.rootEntry[i]);
+	}
+
+	printf("\nSmall Sectors:\t\t");
+	for (int i = 0; i<WORD; i++){
+		printf("%.2X ", _bootSector.smallSectors[i]);
+	}
+
+	printf("\nMedia Type:\t\t");
+	for (int i = 0; i<BYTE; i++){
+		printf("%.2X ", _bootSector.mediaType[i]);
+	}
+
+	printf("\nSectors per FAT:\t");
+	for (int i = 0; i<WORD; i++){
+		printf("%.2X ", _bootSector.sectorsPerFat[i]);
+	}
+
+	printf("\nSectors per Track:\t");
+	for (int i = 0; i<WORD; i++){
+		printf("%.2X ", _bootSector.sectorsPerTrack[i]);
+	}
+
+	printf("\nNumber of Heads:\t");
+	for (int i = 0; i<WORD; i++){
+		printf("%.2X ", _bootSector.numHeads[i]);
+	}
+
+	printf("\nHidden Sectors:\t\t");
+	for (int i = 0; i<DWORD; i++){
+		printf("%.2X ", _bootSector.hiddenSectors[i]);
+	}
+
+	printf("\nLarge Sectors:\t\t");
+	for (int i = 0; i<DWORD; i++){
+		printf("%.2X ", _bootSector.largeSectors[i]);
+	}
+
+	printf("\nPhysical Disk Number:\t");
+	for (int i = 0; i<BYTE; i++){
+		printf("%.2X ", _bootSector.physicalDiskNumber[i]);
+	}
+
+	printf("\nCurrent Head:\t\t");
+	for (int i = 0; i<BYTE; i++){
+		printf("%.2X ", _bootSector.currentHead[i]);
+	}
+
+	printf("\nSignature:\t\t");
+	for (int i = 0; i<BYTE; i++){
+		printf("%.2X ", _bootSector.signature[i]);
+	}
+
+	printf("\nVolume Serial Number:\t");
+	for (int i = 0; i<VOLUMESER_NUM; i++){
+		printf("%.2X ", _bootSector.volumeSerialNumber[i]);
+	}
+
+	printf("\nVolume Label:\t\t");
+	for (int i = 0; i<VOLUME_LABEL; i++){
+		printf("%c ", _bootSector.volumeLabel[i]);
+	}
+
+	printf("\nSystem ID:\t\t");
+	for (int i = 0; i<SYSTEM_ID; i++){
+		printf("%c ", _bootSector.systemID[i]);
+	}
+
+	/* printf("\nBootStrap:\t\t"); */
+	/* for (int i = 0; i<BOOTSTRAP; i++){ */
+	/* 	printf("%.2X ", _bootSector.bootstrap[i]); */
+	/* } */
+
+	printf("\nEND: \t\t\t");
+	for (int i = 0; i<END; i++){
+		printf("%.2X ", _bootSector.end[i]);
+	}
 }
 
 int main(int argc, char** argv){
@@ -60,18 +152,12 @@ int main(int argc, char** argv){
 		printf("Usage: <program> <disk_name>\n");
 		return 1;
 	}
-	int fd = open_disk(argv[argc-1]);
-	if (fd > 0)
-		printf("Opened disk successfully!\n");
+	FILE* fd = open_disk(argv[argc-1]);
 
-	int end = 11; // Eleventh byte
-	int start = 1; // Second byte
-	int size = end-start;
-	uint32_t* buffer = malloc(sizeof(uint32_t)*size);
-	read_disk(fd, start, end, buffer);
-	for (int i = 0; i<((size%sizeof(uint32_t))+1); i++)
-		printf("%.2X ", buffer[i]);
-	printf("\n");
-	close(fd);
+	read_mbr(fd); // Reading MBR Boot Code
+
+	test_mbr();
+	
+	fclose(fd);
 	return 0;
 }
