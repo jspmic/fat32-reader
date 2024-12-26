@@ -1,12 +1,4 @@
 #include <stdio.h>
-#include <fcntl.h>
-#include <assert.h>
-#include <memory.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <stdint.h>
-#include <endian.h>
-#include <assert.h>
 #include "header.h"
 
 
