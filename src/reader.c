@@ -64,7 +64,7 @@ int main(int argc, char** argv){
 	if (fd > 0)
 		printf("Opened disk successfully!\n");
 
-	int end = 11; // Fifth byte
+	int end = 11; // Eleventh byte
 	int start = 1; // Second byte
 	int size = end-start;
 	uint32_t* buffer = malloc(sizeof(uint32_t)*size);
