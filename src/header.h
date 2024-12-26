@@ -8,21 +8,53 @@
 // FAT32 partition table is of size 64 bytes
 #define PARTITION_TABLE 64
 
-typedef struct{
-	uint32_t* BOOT_CODE;
-} Disk;
+#define WORD 2
+#define BYTE 1
 
-enum FAT32_SECTOR{
-	MBR						= 510, 		// The MBR Length
-	PARTITION_DESCRIPTION	= 16,
-	TYPE_CODE				= 5,		// The type code is the 5th byte of the description
-	LBA_BEGIN				= 9,
-	LBA_LAST				= 12,
-	FAT32_CODE				= 0x0B,
-	FAT32_CODE2				= 0x0C,
-	FIRST_LAST_BYTE			= 0x55,		// The first among the 2 last bytes of a sector
-	SECOND_LAST_BYTE		= 0xAA, 	// The very last byte of a sector
+enum{
+	LBA_START = 0,
+	DWORD = WORD*2,
+	MBR_SIZE = 512,
+	JMP = 3,
+	OEM = 8,
+	VOLUMESER_NUM = 4,
+	VOLUME_LABEL = 11,
+	SYSTEM_ID = 8,
+	EXBIOS = 26,
+	BOOTSTRAP = 448,
+	END = 2
 };
+
+typedef struct{
+	// Prologue fields
+	uint8_t jmp[JMP];
+	uint8_t oem[OEM];
+
+	// BIOS fields
+	uint8_t bytesPerSector[WORD];
+	uint8_t sectorsPerCluster[BYTE];
+	uint8_t reservedSectors[WORD];
+	uint8_t numFat[BYTE];
+	uint8_t rootEntry[WORD];
+	uint8_t smallSectors[WORD];
+	uint8_t mediaType[BYTE];
+	uint8_t sectorsPerFat[WORD];
+	uint8_t sectorsPerTrack[WORD];
+	uint8_t numHeads[WORD];
+	uint8_t hiddenSectors[DWORD]; // DWORD = WORD*2
+	uint8_t largeSectors[DWORD];
+	uint8_t physicalDiskNumber[BYTE];
+	uint8_t currentHead[BYTE];
+	uint8_t signature[BYTE];
+	uint8_t volumeSerialNumber[VOLUMESER_NUM];
+	uint8_t volumeLabel[VOLUME_LABEL];
+	uint8_t systemID[SYSTEM_ID];
+
+	// Concluding fields
+	uint8_t bootstrap[BOOTSTRAP];
+	uint8_t end[END];
+
+} BootSector;
 
 
 #endif
