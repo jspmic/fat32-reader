@@ -1,16 +1,19 @@
 #ifndef HDR
 #define HDR
 
-
 // A sector is considered to be 512 bytes large
+#include <stdint.h>
 #define SECTOR_SIZE 512
 
 // FAT32 partition table is of size 64 bytes
 #define PARTITION_TABLE 64
 
+typedef struct{
+	uint32_t* BOOT_CODE;
+} Disk;
+
 enum FAT32_SECTOR{
-	BOOT_START				= 0, 		// The MBR beginning
-	BOOT_END				= 446, 		// The MBR ending
+	MBR						= 510, 		// The MBR Length
 	PARTITION_DESCRIPTION	= 16,
 	TYPE_CODE				= 5,		// The type code is the 5th byte of the description
 	LBA_BEGIN				= 9,

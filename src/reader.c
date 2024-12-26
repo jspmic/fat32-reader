@@ -2,8 +2,13 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <assert.h>
+#include <sys/types.h>
 #include <unistd.h>
+#include <stdint.h>
+#include <endian.h>
+#include <assert.h>
 #include "header.h"
+
 
 /*
  * @description: This is a FAT32 disk reader, that uses Logical Block Addressing(LBA).
@@ -18,44 +23,36 @@
 */
 
 int open_disk(const char* disk_name){
-	int fd = open(disk_name, O_RDONLY, 0);
+	int fd = open(disk_name, O_RDONLY); // READ-ONLY mode
 	if (fd == -1){
-		perror("open_disk");
-		exit(1);
-	}
-	// Place at the end of the MBR
-	if (lseek(fd, BOOT_END, 0) == -1){
+		printf("Disk image not found!");
 		perror("open_disk");
 		exit(1);
 	}
 	return fd;
 }
 
-// Return start position + end - eof
-int read_disk(int fd, unsigned char buffer[], int start, int end){
-	int l = read(fd, buffer, end-start);
-	if (l==-1){
-		perror("read_disk");
-		return -1;
-	}
-	return l;
-}
-
 /*
- This section contains various procedures to read safely
- from a given disk file.
+ * args:
+ * - fd: file descriptor
+ * - start: the starting point of reading
 */
 
-// Read the n-th partition(note that only 4 partitions are available)
-void read_partition_description(int fd, unsigned char buffer[], int n){
-	assert(n > 0);
-	lseek(fd, n*PARTITION_DESCRIPTION, 0);
-	int pos = read_disk(fd, buffer, 0, PARTITION_DESCRIPTION);
+void read_disk(const int fd, const int start, const int end, uint32_t* buffer){
+	lseek(fd, 0, 0);
+	if(lseek(fd, start, 0) < 0)
+		perror("lseek - read_disk");
 
-	if (pos == -1)
-		return;
-	if (lseek(fd, BOOT_END, 0) == -1)
-		perror("read_partition_description");
+	int size = end-start;
+	int l = read(fd, buffer, size);
+
+	if (l==-1)
+		perror("read - read_disk");
+
+	for (int i = 0; i<size; i++){
+		buffer[i] = htobe32(buffer[i]);
+	}
+	lseek(fd, 0, 0);
 }
 
 int main(int argc, char** argv){
@@ -64,10 +61,16 @@ int main(int argc, char** argv){
 		return 1;
 	}
 	int fd = open_disk(argv[argc-1]);
-	unsigned char buffer[PARTITION_DESCRIPTION];
-	read_partition_description(fd, buffer, 1);
-	for (int i = 0; i<PARTITION_DESCRIPTION; i++)
-		printf("%x ", buffer[i]);
+	if (fd > 0)
+		printf("Opened disk successfully!\n");
+
+	int end = 11; // Fifth byte
+	int start = 1; // Second byte
+	int size = end-start;
+	uint32_t* buffer = malloc(sizeof(uint32_t)*size);
+	read_disk(fd, start, end, buffer);
+	for (int i = 0; i<((size%sizeof(uint32_t))+1); i++)
+		printf("%.2X ", buffer[i]);
 	printf("\n");
 	close(fd);
 	return 0;
