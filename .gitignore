@@ -1,2 +1,3 @@
-build/*.img
-build/*.out
+# build/*.img
+# build/*.out
+mount
