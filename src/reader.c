@@ -40,37 +40,37 @@ void test_mbr(void){
 		printf("%.2X ", _bootSector.oem[i]);
 	}
 
-	printf("\nBytes per Sector:\t%X", _bootSector.bytesPerSector);
+	printf("\nBytes per Sector:\t%d", _bootSector.bytesPerSector);
 
-	printf("\nSectors per Cluster:\t%.2X", _bootSector.sectorsPerCluster);
+	printf("\nSectors per Cluster:\t%X", _bootSector.sectorsPerCluster);
 
-	printf("\nReserved Sectors:\t%.2X", _bootSector.reservedSectors);
+	printf("\nReserved Sectors:\t%d", _bootSector.reservedSectors);
 
-	printf("\nNumber of FATs:\t\t%.2X", _bootSector.numFat);
+	printf("\nNumber of FATs:\t\t%d", _bootSector.numFat);
 
-	printf("\nRoot Entries:\t\t%.2X", _bootSector.rootEntry);
+	printf("\nRoot Entries:\t\t%d", _bootSector.rootEntry);
 
-	printf("\nSmall Sectors:\t\t%.2X", _bootSector.smallSectors);
+	printf("\nSmall Sectors:\t\t%X", _bootSector.smallSectors);
 
-	printf("\nMedia Type:\t\t%.2X", _bootSector.mediaType);
+	printf("\nMedia Type:\t\t%X", _bootSector.mediaType);
 
-	printf("\nSectors per FAT:\t%.2X", _bootSector.sectorsPerFat);
+	printf("\nSectors per FAT:\t%d", _bootSector.sectorsPerFat);
 
-	printf("\nSectors per Track:\t%.2X", _bootSector.sectorsPerTrack);
+	printf("\nSectors per Track:\t%X", _bootSector.sectorsPerTrack);
 
-	printf("\nNumber of Heads:\t%.2X", _bootSector.numHeads);
+	printf("\nNumber of Heads:\t%X", _bootSector.numHeads);
 
-	printf("\nHidden Sectors:\t\t%.2X", _bootSector.hiddenSectors);
+	printf("\nHidden Sectors:\t\t%X", _bootSector.hiddenSectors);
 
-	printf("\nLarge Sectors:\t\t%.2X", _bootSector.largeSectors);
+	printf("\nLarge Sectors:\t\t%X", _bootSector.largeSectors);
 
-	printf("\nPhysical Disk Number:\t%.2X", _bootSector.physicalDiskNumber);
+	printf("\nPhysical Disk Number:\t%X", _bootSector.physicalDiskNumber);
 
-	printf("\nCurrent Head:\t\t%.2X", _bootSector.currentHead);
+	printf("\nCurrent Head:\t\t%X", _bootSector.currentHead);
 
-	printf("\nSignature:\t\t%.2X", _bootSector.signature);
+	printf("\nSignature:\t\t%X", _bootSector.signature);
 
-	printf("\nVolume Serial Number:\t%.2X", _bootSector.volumeSerialNumber);
+	printf("\nVolume Serial Number:\t%X", _bootSector.volumeSerialNumber);
 
 	printf("\nVolume Label:\t\t");
 	for (int i = 0; i<VOLUME_LABEL; i++){
@@ -84,10 +84,10 @@ void test_mbr(void){
 
 	/* printf("\nBootStrap:\t\t"); */
 	/* for (int i = 0; i<BOOTSTRAP; i++){ */
-	/* 	printf("%.2X ", _bootSector.bootstrap[i]); */
+	/* 	printf("%X ", _bootSector.bootstrap[i]); */
 	/* } */
 
-	printf("\nEND: \t\t\t%.2X", _bootSector.end);
+	printf("\nEND: \t\t\t%X", _bootSector.end);
 }
 
 int main(int argc, char** argv){
