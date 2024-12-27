@@ -1,4 +1,6 @@
+#include <stdint.h>
 #include <stdio.h>
+#include <endian.h>
 #include "header.h"
 
 
@@ -38,85 +40,37 @@ void test_mbr(void){
 		printf("%.2X ", _bootSector.oem[i]);
 	}
 
-	printf("\nBytes per Sector:\t");
-	for (int i = 0; i<WORD; i++){
-		printf("%.2X ", _bootSector.bytesPerSector[i]);
-	}
+	printf("\nBytes per Sector:\t%X", _bootSector.bytesPerSector);
 
-	printf("\nSectors per Cluster:\t");
-	for (int i = 0; i<BYTE; i++){
-		printf("%.2X ", _bootSector.sectorsPerCluster[i]);
-	}
+	printf("\nSectors per Cluster:\t%.2X", _bootSector.sectorsPerCluster);
 
-	printf("\nReserved Sectors:\t");
-	for (int i = 0; i<WORD; i++){
-		printf("%.2X ", _bootSector.reservedSectors[i]);
-	}
+	printf("\nReserved Sectors:\t%.2X", _bootSector.reservedSectors);
 
-	printf("\nNumber of FATs:\t\t");
-	for (int i = 0; i<BYTE; i++){
-		printf("%.2X ", _bootSector.numFat[i]);
-	}
+	printf("\nNumber of FATs:\t\t%.2X", _bootSector.numFat);
 
-	printf("\nRoot Entries:\t\t");
-	for (int i = 0; i<WORD; i++){
-		printf("%.2X ", _bootSector.rootEntry[i]);
-	}
+	printf("\nRoot Entries:\t\t%.2X", _bootSector.rootEntry);
 
-	printf("\nSmall Sectors:\t\t");
-	for (int i = 0; i<WORD; i++){
-		printf("%.2X ", _bootSector.smallSectors[i]);
-	}
+	printf("\nSmall Sectors:\t\t%.2X", _bootSector.smallSectors);
 
-	printf("\nMedia Type:\t\t");
-	for (int i = 0; i<BYTE; i++){
-		printf("%.2X ", _bootSector.mediaType[i]);
-	}
+	printf("\nMedia Type:\t\t%.2X", _bootSector.mediaType);
 
-	printf("\nSectors per FAT:\t");
-	for (int i = 0; i<WORD; i++){
-		printf("%.2X ", _bootSector.sectorsPerFat[i]);
-	}
+	printf("\nSectors per FAT:\t%.2X", _bootSector.sectorsPerFat);
 
-	printf("\nSectors per Track:\t");
-	for (int i = 0; i<WORD; i++){
-		printf("%.2X ", _bootSector.sectorsPerTrack[i]);
-	}
+	printf("\nSectors per Track:\t%.2X", _bootSector.sectorsPerTrack);
 
-	printf("\nNumber of Heads:\t");
-	for (int i = 0; i<WORD; i++){
-		printf("%.2X ", _bootSector.numHeads[i]);
-	}
+	printf("\nNumber of Heads:\t%.2X", _bootSector.numHeads);
 
-	printf("\nHidden Sectors:\t\t");
-	for (int i = 0; i<DWORD; i++){
-		printf("%.2X ", _bootSector.hiddenSectors[i]);
-	}
+	printf("\nHidden Sectors:\t\t%.2X", _bootSector.hiddenSectors);
 
-	printf("\nLarge Sectors:\t\t");
-	for (int i = 0; i<DWORD; i++){
-		printf("%.2X ", _bootSector.largeSectors[i]);
-	}
+	printf("\nLarge Sectors:\t\t%.2X", _bootSector.largeSectors);
 
-	printf("\nPhysical Disk Number:\t");
-	for (int i = 0; i<BYTE; i++){
-		printf("%.2X ", _bootSector.physicalDiskNumber[i]);
-	}
+	printf("\nPhysical Disk Number:\t%.2X", _bootSector.physicalDiskNumber);
 
-	printf("\nCurrent Head:\t\t");
-	for (int i = 0; i<BYTE; i++){
-		printf("%.2X ", _bootSector.currentHead[i]);
-	}
+	printf("\nCurrent Head:\t\t%.2X", _bootSector.currentHead);
 
-	printf("\nSignature:\t\t");
-	for (int i = 0; i<BYTE; i++){
-		printf("%.2X ", _bootSector.signature[i]);
-	}
+	printf("\nSignature:\t\t%.2X", _bootSector.signature);
 
-	printf("\nVolume Serial Number:\t");
-	for (int i = 0; i<VOLUMESER_NUM; i++){
-		printf("%.2X ", _bootSector.volumeSerialNumber[i]);
-	}
+	printf("\nVolume Serial Number:\t%.2X", _bootSector.volumeSerialNumber);
 
 	printf("\nVolume Label:\t\t");
 	for (int i = 0; i<VOLUME_LABEL; i++){
@@ -133,10 +87,7 @@ void test_mbr(void){
 	/* 	printf("%.2X ", _bootSector.bootstrap[i]); */
 	/* } */
 
-	printf("\nEND: \t\t\t");
-	for (int i = 0; i<END; i++){
-		printf("%.2X ", _bootSector.end[i]);
-	}
+	printf("\nEND: \t\t\t%.2X", _bootSector.end);
 }
 
 int main(int argc, char** argv){
@@ -148,7 +99,7 @@ int main(int argc, char** argv){
 
 	read_mbr(fd); // Reading MBR Boot Code
 
-	test_mbr();
+	test_mbr(); // For testing purposes
 	
 	fclose(fd);
 	return 0;
