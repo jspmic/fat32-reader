@@ -3,26 +3,14 @@
 
 // A sector is considered to be 512 bytes large
 #include <stdint.h>
-#define SECTOR_SIZE 512
-
-// FAT32 partition table is of size 64 bytes
-#define PARTITION_TABLE 64
-
-#define WORD 2
-#define BYTE 1
 
 enum{
-	LBA_START = 0,
-	DWORD = WORD*2,
-	MBR_SIZE = 512,
 	JMP = 3,
 	OEM = 8,
 	VOLUMESER_NUM = 4,
 	VOLUME_LABEL = 11,
 	SYSTEM_ID = 8,
-	EXBIOS = 26,
 	BOOTSTRAP = 448,
-	END = 2
 };
 
 typedef struct{
@@ -50,7 +38,7 @@ typedef struct{
 	uint8_t volumeLabel[VOLUME_LABEL];
 	uint8_t systemID[SYSTEM_ID];
 
-	// Concluding fields
+	// Epilogue fields
 	uint8_t bootstrap[BOOTSTRAP];
 	uint16_t end;
 
