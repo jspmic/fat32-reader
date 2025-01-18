@@ -25,6 +25,7 @@ int main(int argc, char** argv){
 	test_mbr(_bootSector); // For testing purposes
 	bool isfat = isFat32(count_clusters(_bootSector));
 	printf("\nIs FAT32?\t\t%d\n", isfat);
+	printf("Fat Sector(s):\t\t%d\n", FATSEC_SIZE);
 	
 	fclose(fd);
 	return 0;
