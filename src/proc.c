@@ -1,5 +1,8 @@
 #include "header.h"
 #include <stdint.h>
+#include <stdio.h>
+
+uint32_t FATSEC_SIZE;
 
 FILE* open_disk(const char* disk_name){
 	FILE* fd = fopen(disk_name, "rb"); // READ-ONLY mode
@@ -11,7 +14,17 @@ bool read_bootCode(FILE* disk, struct BootSector *_bootSector){
 		perror("read_bootCode");
 		return false;
 	}
+	FATSEC_SIZE = (_bootSector->BPB_NumFATs)*(_bootSector->BPB_FatSz32);
 	return true;
+}
+
+bool read_sector(FILE* disk, struct BootSector *_bootSector, uint32_t lba, uint32_t count, void *bufferOut){
+	// lba: sector number to begin from
+	// count: number of sectors to read
+	bool ok = true;
+	ok = ok && (fseek(disk, lba*(_bootSector->BPB_BytesPerSec), SEEK_SET) == 0);
+	ok = ok && (fread(bufferOut, _bootSector->BPB_BytesPerSec, count, disk) == count);
+	return ok;
 }
 
 void test_mbr(struct BootSector *_bootSector){
@@ -25,30 +38,30 @@ void test_mbr(struct BootSector *_bootSector){
 		printf("%c", _bootSector->BS_OEM[i]);
 	}
 
-	printf("\nBytes per Sector:\t%X", _bootSector->BPB_BytesPerSec);
+	printf("\nBytes per Sector:\t%d", _bootSector->BPB_BytesPerSec);
 
 	printf("\nSectors per Cluster:\t%X", _bootSector->BPB_SecPerClus);
 
-	printf("\nReserved Sectors:\t%X", _bootSector->BPB_RsvdSecCnt);
+	printf("\nReserved Sectors:\t%d", _bootSector->BPB_RsvdSecCnt);
 
-	printf("\nNumber of FATs:\t\t%X", _bootSector->BPB_NumFATs);
+	printf("\nNumber of FATs:\t\t%d", _bootSector->BPB_NumFATs);
 	printf("\nBoot Sector(backup):\t%X", _bootSector->BPB_BkBootSec);
 
-	printf("\nRoot Entries:\t\t%X", _bootSector->BPB_RootEntCnt);
+	printf("\nRoot Entries:\t\t%d", _bootSector->BPB_RootEntCnt);
 
-	printf("\nSmall Sectors:\t\t%X", _bootSector->BPB_TotSec16);
+	printf("\nSmall Sectors:\t\t%d", _bootSector->BPB_TotSec16);
 
 	printf("\nMedia Type:\t\t%X", _bootSector->BPB_Media);
 
-	printf("\nSectors per FAT:\t%X", _bootSector->BPB_FATSz16);
+	printf("\nSectors per FAT:\t%d", _bootSector->BPB_FatSz32);
 
 	printf("\nSectors per Track:\t%X", _bootSector->BPB_SecPerTrk);
 
 	printf("\nNumber of Heads:\t%X", _bootSector->BPB_NumHeads);
 
-	printf("\nHidden Sectors:\t\t%X", _bootSector->BPB_HiddSec);
+	printf("\nHidden Sectors:\t\t%d", _bootSector->BPB_HiddSec);
 
-	printf("\nLarge Sectors:\t\t%X", _bootSector->BPB_TotSec32);
+	printf("\nLarge Sectors:\t\t%d", _bootSector->BPB_TotSec32);
 
 	printf("\nPhysical Disk Number:\t%X", _bootSector->BS_DrvNum);
 
