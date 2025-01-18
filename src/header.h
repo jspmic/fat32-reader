@@ -1,48 +1,63 @@
 #ifndef HDR
 #define HDR
 
-// A sector is considered to be 512 bytes large
 #include <stdint.h>
+#include <stdio.h>
+#include <stdbool.h>
+
 
 enum{
 	JMP = 3,
 	OEM = 8,
-	VOLUMESER_NUM = 4,
 	VOLUME_LABEL = 11,
 	SYSTEM_ID = 8,
-	BOOTSTRAP = 448,
+	BOOTSTRAP = 420,
 };
 
-typedef struct{
+struct BootSector{
 	// Prologue fields
-	uint8_t jmp[JMP];
-	uint8_t oem[OEM];
+	uint8_t BS_jmpBoot[JMP];
+	uint8_t BS_OEM[OEM];
 
 	// BIOS fields
-	uint16_t bytesPerSector;
-	uint8_t sectorsPerCluster;
-	uint16_t reservedSectors;
-	uint8_t numFat;
-	uint16_t rootEntry;
-	uint16_t smallSectors;
-	uint8_t mediaType;
-	uint16_t sectorsPerFat;
-	uint16_t sectorsPerTrack;
-	uint16_t numHeads;
-	uint32_t hiddenSectors;
-	uint32_t largeSectors;
-	uint8_t physicalDiskNumber;
-	uint8_t currentHead;
-	uint8_t signature;
-	uint32_t volumeSerialNumber;
-	uint8_t volumeLabel[VOLUME_LABEL];
-	uint8_t systemID[SYSTEM_ID];
+	uint16_t BPB_BytesPerSec;
+	uint8_t BPB_SecPerClus;
+	uint16_t BPB_RsvdSecCnt;
+	uint8_t BPB_NumFATs;
+	uint16_t BPB_RootEntCnt;
+	uint16_t BPB_TotSec16;
+	uint8_t BPB_Media;
+	uint16_t BPB_FATSz16;
+	uint16_t BPB_SecPerTrk;
+	uint16_t BPB_NumHeads;
+	uint32_t BPB_HiddSec;
+	uint32_t BPB_TotSec32;
+
+	uint32_t BPB_FatSz32;
+	uint16_t BPB_ExtFlags;
+	uint16_t BPB_FSVer;
+	uint32_t BPB_RootClus;
+	uint16_t BPB_FSInfo;
+	uint16_t BPB_BkBootSec;
+	uint8_t BPB_Reserved[12];
+
+	uint8_t BS_DrvNum;
+	uint8_t BS_Reserved1;
+	uint8_t BS_BootSig;
+	uint32_t BS_VolID;
+	uint8_t BS_VolLab[VOLUME_LABEL];
+	uint8_t BS_FilSysType[SYSTEM_ID];
 
 	// Epilogue fields
 	uint8_t bootstrap[BOOTSTRAP];
-	uint16_t end;
+	uint16_t Signature_word;
 
-}__attribute__((packed)) BootSector;
+}__attribute__((packed));
 
+extern bool read_bootCode(FILE* disk, struct BootSector *_bootSector);
+
+extern FILE* open_disk(const char* disk_name);
+
+extern void test_mbr(struct BootSector *_bootSector);
 
 #endif
