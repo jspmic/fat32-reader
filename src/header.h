@@ -11,6 +11,7 @@
 enum{
 	JMP = 3,
 	OEM = 8,
+	SECTOR_SIZE=512,
 	VOLUME_LABEL = 11,
 	SYSTEM_ID = 8,
 	BOOTSTRAP = 420,
@@ -56,10 +57,18 @@ struct BootSector{
 
 }__attribute__((packed));
 
+struct FAT{
+	uint8_t padding[SECTOR_SIZE];
+}__attribute__((packed));
+
 extern bool read_bootCode(FILE* disk, struct BootSector *_bootSector);
 
 extern FILE* open_disk(const char* disk_name);
 
 extern void test_mbr(struct BootSector *_bootSector);
+
+extern uint32_t count_clusters(struct BootSector *_bootSector);
+
+extern bool isFat32(uint32_t clusters);
 
 #endif

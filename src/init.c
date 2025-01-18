@@ -23,6 +23,8 @@ int main(int argc, char** argv){
 	read_bootCode(fd, _bootSector); // Reading MBR Boot Code
 
 	test_mbr(_bootSector); // For testing purposes
+	bool isfat = isFat32(count_clusters(_bootSector));
+	printf("\nIs FAT32?\t\t%d\n", isfat);
 	
 	fclose(fd);
 	return 0;

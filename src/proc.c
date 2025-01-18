@@ -1,4 +1,5 @@
 #include "header.h"
+#include <stdint.h>
 
 FILE* open_disk(const char* disk_name){
 	FILE* fd = fopen(disk_name, "rb"); // READ-ONLY mode
@@ -7,7 +8,7 @@ FILE* open_disk(const char* disk_name){
 
 bool read_bootCode(FILE* disk, struct BootSector *_bootSector){
 	if (fread(_bootSector, sizeof(*(_bootSector)), 1, disk) < 0){
-		perror("read_mbr");
+		perror("read_bootCode");
 		return false;
 	}
 	return true;
@@ -31,6 +32,7 @@ void test_mbr(struct BootSector *_bootSector){
 	printf("\nReserved Sectors:\t%X", _bootSector->BPB_RsvdSecCnt);
 
 	printf("\nNumber of FATs:\t\t%X", _bootSector->BPB_NumFATs);
+	printf("\nBoot Sector(backup):\t%X", _bootSector->BPB_BkBootSec);
 
 	printf("\nRoot Entries:\t\t%X", _bootSector->BPB_RootEntCnt);
 
@@ -72,4 +74,33 @@ void test_mbr(struct BootSector *_bootSector){
 	/* } */
 
 	printf("\nEND: \t\t\t%X", htobe16(_bootSector->Signature_word));
+}
+
+uint32_t count_clusters(struct BootSector *_bootSector){
+	uint16_t RootDirSectors = ((_bootSector->BPB_RootEntCnt * 32) + (_bootSector->BPB_BytesPerSec-1)) / _bootSector->BPB_BytesPerSec;
+	uint32_t fatSz, totSec, dataSec, countClusters;
+	if (_bootSector->BPB_FATSz16 != 0){
+		fatSz = _bootSector->BPB_FATSz16;
+	}
+	else{
+		fatSz = _bootSector->BPB_FatSz32;
+	}
+
+	if (_bootSector->BPB_TotSec16 != 0){
+		totSec = _bootSector->BPB_TotSec16;
+	}
+	else {
+		totSec = _bootSector->BPB_TotSec32;
+	}
+
+	dataSec = totSec - (_bootSector->BPB_RsvdSecCnt + (_bootSector->BPB_NumFATs * fatSz) + RootDirSectors);
+	countClusters = dataSec/(_bootSector->BPB_SecPerClus);
+	return countClusters;
+}
+
+bool isFat32(uint32_t clusters){
+	if (clusters < 4085 || clusters < 65525){
+		return false;
+	}
+	return true;
 }
