@@ -7,6 +7,7 @@
 #include <endian.h>
 #include <stdbool.h>
 
+extern uint32_t FATSEC_SIZE; // Total number of sectors for the FAT region
 
 enum{
 	JMP = 3,
@@ -70,5 +71,7 @@ extern void test_mbr(struct BootSector *_bootSector);
 extern uint32_t count_clusters(struct BootSector *_bootSector);
 
 extern bool isFat32(uint32_t clusters);
+
+extern bool read_sector(FILE* disk, struct BootSector *_bootSector, uint32_t lba, uint32_t count, void *bufferOut);
 
 #endif
