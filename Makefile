@@ -3,7 +3,7 @@ CFLAGS=-Wall
 BUILD_DIR=./build
 DISK=fat32.img
 DISK2=fat32_disk.img
-SRC=./src/init.c
+SRC=./src/init.c ./src/proc.c
 SIZE=64
 
 .PHONY: build disk clean
