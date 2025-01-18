@@ -15,7 +15,7 @@
 
 /*
  This section contains the basic functions which we will work with
- to implement the reader
+ to implement the reader and the main entry point of the driver(for testing)
 */
 
 
