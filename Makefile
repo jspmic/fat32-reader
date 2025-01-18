@@ -3,7 +3,7 @@ CFLAGS=-Wall
 BUILD_DIR=./build
 DISK=fat32.img
 DISK2=fat32_disk.img
-SRC=./src/reader.c
+SRC=./src/init.c
 SIZE=64
 
 .PHONY: build disk clean
@@ -18,7 +18,7 @@ disk:
 	else \
 		echo "Creating disk image '$(DISK)'..."; \
 		dd if=/dev/zero of=$(BUILD_DIR)/$(DISK) bs=1M count=$(SIZE); \
-		mkfs.fat -F 32 $(BUILD_DIR)/$(DISK); \
+		mkfs.fat -F 32 -n "TEST_LABEL" $(BUILD_DIR)/$(DISK); \
 		echo "Disk image '$(DISK)' created."; \
 	fi
 
