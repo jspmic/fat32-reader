@@ -2,7 +2,9 @@
 #define HDR
 
 #include <stdint.h>
+#include <stdlib.h>
 #include <stdio.h>
+#include <endian.h>
 #include <stdbool.h>
 
 
