@@ -22,11 +22,12 @@ int main(int argc, char** argv){
 
 	read_bootCode(fd, _bootSector); // Reading MBR Boot Code
 
-	test_mbr(_bootSector); // For testing purposes
-	bool isfat = isFat32(count_clusters(_bootSector));
-	printf("\nIs FAT32?\t\t%d\n", isfat);
-	printf("Fat Sector(s):\t\t%d\n", FATSEC_SIZE);
-	
+	bool isfat32 = isFat32(count_clusters(_bootSector));
+	printf("\nIs FAT32?\t\t%s\n", IS_FAT(isfat32));
+	if (isfat32){
+		test_mbr(_bootSector); // For testing purposes
+		printf("\nFat Sector(s):\t\t%d\n", FATSEC_SIZE);
+	}
 	fclose(fd);
 	return 0;
 }

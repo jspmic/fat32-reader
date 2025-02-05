@@ -7,6 +7,8 @@
 #include <endian.h>
 #include <stdbool.h>
 
+#define IS_FAT(x) x ? "YES": "NO"
+
 extern uint32_t FATSEC_SIZE; // Total number of sectors for the FAT region
 
 enum{
