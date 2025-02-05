@@ -1,9 +1,10 @@
 CC=gcc
 CFLAGS=-Wall
 BUILD_DIR=./build
+SRC_DIR=./src
 DISK=fat32.img
 DISK2=fat32_disk.img
-SRC=./src/init.c ./src/proc.c
+SRC=$(shell ls $(SRC_DIR)/*.c)
 SIZE=64
 
 .PHONY: build disk clean
