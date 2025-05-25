@@ -24,8 +24,4 @@ disk:
 	fi
 
 clean:
-	@if [ -e "$(BUILD_DIR)/$(DISK)" ]; then \
-		rm -f $(BUILD_DIR)/$(DISK) $(BUILD_DIR)/a.out; \
-	else \
-		echo "File '$(DISK)' doesn't exists."; \
-	fi
+	rm $(BUILD_DIR)/$(BIN)
