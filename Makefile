@@ -3,15 +3,15 @@ CFLAGS=-Wall
 BUILD_DIR=./build
 SRC_DIR=./src
 DISK=fat32.img
-# DISK=fat12_disk.img
+BIN=main
 SRC=$(shell ls $(SRC_DIR)/*.c)
 SIZE=64
 
 .PHONY: build disk clean
 
 build: disk
-	$(CC) $(CFLAGS) $(SRC) -o $(BUILD_DIR)/a.out
-	$(BUILD_DIR)/a.out $(BUILD_DIR)/$(DISK)
+	$(CC) $(CFLAGS) $(BIN).c -I $(SRC_DIR) $(SRC) -o $(BUILD_DIR)/$(BIN)
+	$(BUILD_DIR)/$(BIN) $(BUILD_DIR)/$(DISK)
 
 disk:
 	@if [ -e "$(BUILD_DIR)/$(DISK)" ]; then \
