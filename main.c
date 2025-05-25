@@ -10,7 +10,7 @@
  but you may use this to see how the reader is used
 */
 
-#include "header.h"
+#include "src/header.h"
 
 int main(int argc, char** argv){
 	if (argc != 2){
